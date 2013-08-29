@@ -1,0 +1,128 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+	<title>Layout Container</title>
+
+	<link type="text/css" rel="stylesheet" href="../css/layout-default-latest.css" />
+    <link type="text/css" rel="stylesheet" href="../css/bootstrap.css" />
+	<style type="text/css">
+	      #editor {
+            height: 300px;
+            /*min-width: 275px;*/
+            display: block;
+            position:relative;
+	      }
+
+          #preview {height: 275px;
+            min-width: 275px;
+            display: block;
+            position:relative;
+          }
+
+            /* Customize the navbar links to be fill the entire space of the .navbar */
+          /*.navbar .navbar-inner {*/
+            /*padding: 0;*/
+          /*}*/
+          /*.navbar .nav {*/
+            /*margin: 0;*/
+            /*display: table;*/
+            /*width: 100%;*/
+          /*}*/
+          /*.navbar .nav li {*/
+            /*display: table-cell;*/
+            /*width: 1%;*/
+            /*float: none;*/
+          /*}*/
+          /*.navbar .nav li a {*/
+            /*font-weight: bold;*/
+            /*text-align: center;*/
+            /*border-left: 1px solid rgba(255,255,255,.75);*/
+            /*border-right: 1px solid rgba(0,0,0,.1);*/
+          /*}*/
+          /*.navbar .nav li:first-child a {*/
+            /*border-left: 0;*/
+            /*border-radius: 3px 0 0 3px;*/
+          /*}*/
+          /*.navbar .nav li:last-child a {*/
+            /*border-right: 0;*/
+            /*border-radius: 0 3px 3px 0;*/
+          /*}*/
+
+	html, body {
+		/*background:	#666;*/
+		width:		100%;
+		height:		100%;
+		padding:	0;
+		margin:		0;
+		overflow:	auto;  when page gets too small
+	}
+	#container {
+		/*background:	#999;*/
+		height:		100%;
+		margin:		0 auto;
+		width:		100%;
+		/*max-width:	900px;*/
+		min-width:	700px;
+		_width:		700px;  min-width for IE6
+	}
+	.pane {
+		display: none;  will appear when layout inits
+	}
+	</style>
+
+	<script type="text/javascript" src="../js/jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="../js/jquery-ui-latest.js"></script>
+	<script type="text/javascript" src="../js/jquery.layout-latest.js"></script>
+	<script src="../js/knockout.js" type="text/javascript"></script>
+    <script src="../js/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/showdown.js" type="text/javascript"></script>
+
+
+</head>
+<body>
+<div id="container" class="row span10">
+    <div class="pane ui-layout-center span5">
+        <div id="editor"></div>
+    </div>
+    <div class="pane ui-layout-east span5">
+        <div id="preview" data-bind="html:preview"></div>
+    </div>
+</div> <!-- container -->
+
+	<script type="text/javascript">
+
+	$(document).ready(function () {
+		var layout = $('#container').layout();
+//        layout.sizePane('east', 600);
+//        layout.sizePane('center', 800);
+	});
+
+    /* page editor */
+    var updateEditor = function(){
+        vm.preview(converter.makeHtml(editor.getValue())); // editor.getValue fires when text is added to ace editor
+                                                            // and showdown converts that markdown output to HTML
+                                                            // and, finally, knockout updates the preview div with that
+    };
+
+    var editor = ace.edit("editor");                     // creating an editor and assigning it to "editor" div
+    editor.on('change', function(e){
+        updateEditor();
+    });
+    editor.setTheme("ace/theme/chrome");
+    editor.getSession().setMode("ace/mode/markdown");
+
+    /* page preview */
+    var converter = new Showdown.converter();
+    function AppViewModel() {
+        var self = this;
+        this.preview = ko.observable();
+    };
+    var vm = new AppViewModel();
+    ko.applyBindings(vm);                               // activates bindings
+    updateEditor();
+	</script>
+</body>
+</html>
